@@ -1,3 +1,6 @@
+mod arg;
+
 fn main() {
-    println!("Hello, world!");
+    let package = arg::parse();
+    println!("package: {package}");
 }
