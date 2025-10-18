@@ -1,6 +1,7 @@
 mod arg;
+mod aur_search;
 
 fn main() {
     let package = arg::parse();
-    println!("package: {package}");
+    aur_search::search(&package);
 }
