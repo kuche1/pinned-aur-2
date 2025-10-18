@@ -3,16 +3,18 @@ use serde::Deserialize;
 
 const URL: &str = "https://aur.archlinux.org/rpc";
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct AurResponse {
-    version: i32,
+    #[serde(rename = "version")]
+    _version: i32, // TODO: check if this matches the requested API version and print a warning if it does not
     #[serde(rename = "type")]
-    response_type: String,
-    resultcount: i32,
+    _response_type: String,
+    #[serde(rename = "resultcount")]
+    _resultcount: i32,
     results: Vec<AurPackage>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct AurPackage {
     #[serde(rename = "Name")]
     name: String,
@@ -25,7 +27,7 @@ struct AurPackage {
 }
 
 pub fn search(package: &str) {
-    println!("searching for: {package}");
+    println!("Searching for: {package}");
 
     let params = [
         ("v", "5"), // api version
@@ -42,7 +44,7 @@ pub fn search(package: &str) {
 
     let aur_data: AurResponse = response.json().expect("could not parse AUR response");
 
-    println!("Found {} results:", aur_data.resultcount);
+    println!("Found {} results:", aur_data._resultcount);
     for pkg in aur_data.results.iter().take(5) {
         println!(
             "{} {} - {} (maintainer: {})",
