@@ -14,10 +14,14 @@ struct AurResponse {
 
 #[derive(Debug, Deserialize)]
 struct AurPackage {
-    Name: String,
-    Version: String,
-    Description: Option<String>,
-    Maintainer: Option<String>,
+    #[serde(rename = "Name")]
+    name: String,
+    #[serde(rename = "Version")]
+    version: String,
+    #[serde(rename = "Description")]
+    description: Option<String>,
+    #[serde(rename = "Maintainer")]
+    maintainer: Option<String>,
 }
 
 pub fn search(package: &str) {
@@ -42,10 +46,10 @@ pub fn search(package: &str) {
     for pkg in aur_data.results.iter().take(5) {
         println!(
             "{} {} - {} (maintainer: {})",
-            pkg.Name,
-            pkg.Version,
-            pkg.Description.as_deref().unwrap_or("No description"),
-            pkg.Maintainer.as_deref().unwrap_or("None")
+            pkg.name,
+            pkg.version,
+            pkg.description.as_deref().unwrap_or("No description"),
+            pkg.maintainer.as_deref().unwrap_or("None")
         );
     }
 }
