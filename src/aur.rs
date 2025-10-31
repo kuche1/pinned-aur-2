@@ -1,3 +1,4 @@
+use colored::Colorize;
 use reqwest::blocking::Client; // cargo add reqwest --features blocking // cargo add reqwest --features json
 use serde::Deserialize;
 use std::fmt::Display;
@@ -31,18 +32,20 @@ pub struct AurPackage {
 
 impl Display for AurPackage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "{} {{{}}} ", self.name, self.version)?;
+        write!(f, "{} ", self.name)?;
+        write!(f, "{}", format!("{{{}}}", self.version).yellow())?;
+        writeln!(f)?;
+
         match &self.description {
             Some(desc) => writeln!(f, "{}", desc)?,
             None => writeln!(f, "No Description")?,
         }
+
         Ok(())
     }
 }
 
 pub fn search(package: &str) -> Vec<AurPackage> {
-    println!("Searching for: {package}");
-
     let params = [
         ("v", "5"), // api version
         ("type", "search"),
