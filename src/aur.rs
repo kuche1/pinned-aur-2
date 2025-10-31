@@ -26,14 +26,24 @@ pub struct AurPackage {
     description: Option<String>,
     #[serde(rename = "Version")]
     version: String,
+    #[serde(rename = "NumVotes")]
+    num_votes: u32,
+    #[serde(rename = "Popularity")]
+    popularity: f32,
     // #[serde(rename = "Maintainer")]
     // maintainer: Option<String>,
 }
 
 impl Display for AurPackage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} ", self.name)?;
-        write!(f, "{}", format!("{{{}}}", self.version).yellow())?;
+        write!(f, "{} ", self.name.cyan())?;
+        write!(
+            f,
+            "[{}/{}] ",
+            format!("{}", self.num_votes).green(),
+            format!("{:.2}", self.popularity).green(),
+        )?;
+        write!(f, "{{{}}}", self.version.yellow())?;
         writeln!(f)?;
 
         match &self.description {
@@ -72,7 +82,11 @@ pub fn search(package: &str) -> Vec<AurPackage> {
     //     );
     // }
 
-    let packages = aur_data.results;
+    let mut packages = aur_data.results;
+
+    packages.sort_by(|a, b| a.num_votes.cmp(&b.num_votes));
+
+    packages.reverse();
 
     return packages;
 }
