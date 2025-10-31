@@ -1,5 +1,6 @@
 use reqwest::blocking::Client; // cargo add reqwest --features blocking // cargo add reqwest --features json
 use serde::Deserialize;
+use std::fmt::Display;
 
 const URL: &str = "https://aur.archlinux.org/rpc";
 
@@ -17,7 +18,7 @@ struct AurResponse {
 // for example:
 // {'Description': 'Zoom VDI VMWare plugin', 'FirstSubmitted': 1706807860, 'ID': 1528188, 'LastModified': 1724630068, 'Maintainer': 'vachicorne', 'Name': 'zoom-vmware-plugin', 'NumVotes': 0, 'OutOfDate': None, 'PackageBase': 'zoom-vmware-plugin', 'PackageBaseID': 202104, 'Popularity': 0, 'URL': 'https://support.zoom.us/hc/en-us/articles/4415057249549-VDI-releases-and-downloads', 'URLPath': '/cgit/aur.git/snapshot/zoom-vmware-plugin.tar.gz', 'Version': '6.0.10-1'}
 #[derive(Deserialize)]
-struct AurPackage {
+pub struct AurPackage {
     #[serde(rename = "Name")]
     name: String,
     #[serde(rename = "Description")]
@@ -28,7 +29,18 @@ struct AurPackage {
     // maintainer: Option<String>,
 }
 
-pub fn search(package: &str) {
+impl Display for AurPackage {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "{} {{{}}} ", self.name, self.version)?;
+        match &self.description {
+            Some(desc) => writeln!(f, "{}", desc)?,
+            None => writeln!(f, "No Description")?,
+        }
+        Ok(())
+    }
+}
+
+pub fn search(package: &str) -> Vec<AurPackage> {
     println!("Searching for: {package}");
 
     let params = [
@@ -46,14 +58,18 @@ pub fn search(package: &str) {
 
     let aur_data: AurResponse = response.json().expect("could not parse AUR response");
 
-    println!("Found {} results:", aur_data._resultcount);
-    for pkg in aur_data.results.iter().take(5) {
-        println!(
-            "{} {} - {}", // "{} {} - {} (maintainer: {})",
-            pkg.name,
-            pkg.version,
-            pkg.description.as_deref().unwrap_or("No description"),
-            // pkg.maintainer.as_deref().unwrap_or("None")
-        );
-    }
+    // println!("Found {} results:", aur_data._resultcount);
+    // for pkg in aur_data.results.iter().take(5) {
+    //     println!(
+    //         "{} {} - {}", // "{} {} - {} (maintainer: {})",
+    //         pkg.name,
+    //         pkg.version,
+    //         pkg.description.as_deref().unwrap_or("No description"),
+    //         // pkg.maintainer.as_deref().unwrap_or("None")
+    //     );
+    // }
+
+    let packages = aur_data.results;
+
+    return packages;
 }
