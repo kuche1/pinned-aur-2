@@ -14,16 +14,18 @@ struct AurResponse {
     results: Vec<AurPackage>,
 }
 
+// for example:
+// {'Description': 'Zoom VDI VMWare plugin', 'FirstSubmitted': 1706807860, 'ID': 1528188, 'LastModified': 1724630068, 'Maintainer': 'vachicorne', 'Name': 'zoom-vmware-plugin', 'NumVotes': 0, 'OutOfDate': None, 'PackageBase': 'zoom-vmware-plugin', 'PackageBaseID': 202104, 'Popularity': 0, 'URL': 'https://support.zoom.us/hc/en-us/articles/4415057249549-VDI-releases-and-downloads', 'URLPath': '/cgit/aur.git/snapshot/zoom-vmware-plugin.tar.gz', 'Version': '6.0.10-1'}
 #[derive(Deserialize)]
 struct AurPackage {
     #[serde(rename = "Name")]
     name: String,
-    #[serde(rename = "Version")]
-    version: String,
     #[serde(rename = "Description")]
     description: Option<String>,
-    #[serde(rename = "Maintainer")]
-    maintainer: Option<String>,
+    #[serde(rename = "Version")]
+    version: String,
+    // #[serde(rename = "Maintainer")]
+    // maintainer: Option<String>,
 }
 
 pub fn search(package: &str) {
@@ -47,11 +49,11 @@ pub fn search(package: &str) {
     println!("Found {} results:", aur_data._resultcount);
     for pkg in aur_data.results.iter().take(5) {
         println!(
-            "{} {} - {} (maintainer: {})",
+            "{} {} - {}", // "{} {} - {} (maintainer: {})",
             pkg.name,
             pkg.version,
             pkg.description.as_deref().unwrap_or("No description"),
-            pkg.maintainer.as_deref().unwrap_or("None")
+            // pkg.maintainer.as_deref().unwrap_or("None")
         );
     }
 }
